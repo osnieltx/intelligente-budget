@@ -1,1 +1,3 @@
 gspread
+pluggy_sdk
+python-dotenv
