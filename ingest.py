@@ -96,15 +96,18 @@ def load_google_sheet_data(worksheet):
     return pd.DataFrame(columns=['id', 'date', 'description', 'amount', 'category'])
 
 def save_to_google_sheet(worksheet, df):
-    # Convert numerical amounts to standard floats/strings for the API
-    df['amount'] = df['amount'].astype(float)
+  # Clean NaN/None values so they become empty strings instead of invalid JSON floats
+  df_clean = df.fillna("")
 
-    # Prepare matrix with headers
-    values = [df.columns.tolist()] + df.values.tolist()
+  # Convert numerical amounts to standard floats, handling blanks safely
+  df_clean["amount"] = pd.to_numeric(df_clean["amount"], errors="coerce").fillna(0.0)
 
-    # Clear and overwrite the current month's tab
-    worksheet.clear()
-    worksheet.update(values, 'A1')
+  # Prepare matrix with headers
+  values = [df_clean.columns.tolist()] + df_clean.values.tolist()
+
+  # Clear and overwrite the current month's tab
+  worksheet.clear()
+  worksheet.update(values=values, range_name="A1")
 
 # ==========================================
 # MAIN EXECUTION
