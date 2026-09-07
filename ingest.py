@@ -1,3 +1,6 @@
+import json
+import os
+
 import calendar
 import requests
 import pandas as pd
@@ -8,10 +11,10 @@ from google.oauth2.service_account import Credentials
 # ==========================================
 # CONFIGURATIONS
 # ==========================================
-CLIENT_ID = 'ea4fb8d2-cd6a-4ca3-ae03-50fb03df2602'
-CLIENT_SECRET = 'dba6d523-cf89-4570-a870-9b1f2cfdef59'
-ACCOUNT_ID = 'c97fe49e-8b4f-44cc-b1b9-e2eac5e9666f'
-CREDIT_CARD_ID = '09644483-8c39-431b-a9b8-67b1325c193d'
+CLIENT_ID = os.environ.get("CLIENT_ID")
+CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
+ACCOUNT_ID = os.environ.get("ACCOUNT_ID")
+CREDIT_CARD_ID = os.environ.get("CREDIT_CARD_ID")
 
 # Google Sheets Config
 SPREADSHEET_NAME = 'personal-budget-ledger'
@@ -108,8 +111,18 @@ def save_to_google_sheet(worksheet, df):
 # ==========================================
 def main():
     print("Initializing Google Sheets connection...")
-    creds = Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=SCOPES)
-    gc = gspread.authorize(creds)
+    # Check if running in GitHub Actions (or any cloud env with the secret set)
+    gcp_sa_key = os.getenv("GCP_SA_KEY")
+    if gcp_sa_key:
+        # Load credentials from the GitHub Actions environment secret
+        service_account_info = json.loads(gcp_sa_key)
+        credentials = Credentials.from_service_account_info(
+            service_account_info, scopes=SCOPES
+        )
+        gc = gspread.authorize(credentials)
+    else:
+        # Fallback for local development on your machine
+        gc = gspread.service_account(filename="credentials.json")
     spreadsheet = gc.open(SPREADSHEET_NAME)
 
     now = date.today()

@@ -1,0 +1,35 @@
+name: Financial Data Ingestion
+
+on:
+  schedule:
+    # Runs twice a day: 15:00 and 21:00 UTC (12:00 and 18:00 BRT)
+    - cron: '0 15,21 * * *'
+  workflow_dispatch: # Allows triggering manually from GitHub UI
+
+jobs:
+  run-sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run ingestion script
+        env:
+          CLIENT_ID = ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET = ${{ secrets.CLIENT_SECRET }}
+          ACCOUNT_ID = ${{ secrets.ACCOUNT_ID }}
+          CREDIT_CARD_ID = ${{ secrets.CREDIT_CARD_ID }}
+          GCP_SA_KEY = ${{ secrets.CGP_SA_KEY }}
+        run: |
+          python ingest.py
