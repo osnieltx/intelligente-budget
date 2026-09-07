@@ -1,3 +1,8 @@
+google-auth
 gspread
+jupyter
+matplotlib
+pandas
 pluggy_sdk
 python-dotenv
+requests
