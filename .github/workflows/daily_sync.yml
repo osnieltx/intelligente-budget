@@ -1,6 +1,13 @@
 name: Financial Data Ingestion
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'ingest.py'
+      - 'requirements.txt'
+      - '.github/workflows/**'
   schedule:
     # Runs twice a day: 15:00 and 21:00 UTC (12:00 and 18:00 BRT)
     - cron: '0 15,21 * * *'
