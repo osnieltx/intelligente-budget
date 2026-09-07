@@ -30,6 +30,6 @@ jobs:
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
           ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
           CREDIT_CARD_ID: ${{ secrets.CREDIT_CARD_ID }}
-          GCP_SA_KEY: ${{ secrets.CGP_SA_KEY }}
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
         run: |
           python ingest.py
